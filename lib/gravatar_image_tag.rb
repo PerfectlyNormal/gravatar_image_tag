@@ -80,6 +80,11 @@ module GravatarImageTag
     "#{gravatar_url_base(gravatar_params.delete(:secure))}/#{gravatar_id(email, gravatar_params.delete(:filetype))}#{url_params(gravatar_params)}"
   end
 
+  def self.gravatar_id(email, filetype = nil)
+    return "#{ email[9..-1] }#{ ".#{filetype}" unless filetype.nil? }" if email[0..8] == "gravatar:"
+    "#{ Digest::MD5.hexdigest(email) }#{ ".#{filetype}" unless filetype.nil? }" unless email.nil?
+  end
+
   private
 
     def self.gravatar_options(overrides = {})
@@ -94,10 +99,6 @@ module GravatarImageTag
 
     def self.gravatar_url_base(secure = false)
       'http' + (!!secure ? 's://secure.' : '://') + 'gravatar.com/avatar'
-    end
-
-    def self.gravatar_id(email, filetype = nil)
-      "#{ Digest::MD5.hexdigest(email) }#{ ".#{filetype}" unless filetype.nil? }" unless email.nil?
     end
 
     def self.url_params(gravatar_params)
